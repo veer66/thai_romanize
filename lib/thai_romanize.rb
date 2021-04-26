@@ -122,53 +122,31 @@ $ฤ,\\1ri"""
     VOWELS.each { word.gsub!(_1, _2) }
     return word
   end
+
+  def self.replace_consonants_i(word, consonants, i)
+    if i == 0 and consonants[0] == "ห"
+      [word.gsub(consonants[0], ""), consonants[1..-1], i]
+    elsif i > 0 and consonants[i] == "ร" and i == word.length and word[i - 1] == "ร"
+      [word.gsub(consonants[i], CONSONANTS[consonants[i]][1]), consonants, i]
+    elsif i > 0 and consonants[i] == "ร" and i < word.length and
+         i + 1 == word.length and word[i] = "ร"
+      [word.gsub(consonants[i], CONSONANTS[consonants[i]][1]), consonants, i]
+    elsif i > 0 and consonants[i] == "ร" and i < word.length and word[i] == "ร" and
+         i + 1 < word.length and
+         word[i + 1] == "ร"
+      [word[0...i] + (i + 2 == consonants.length ? "an" : "a") + word[(i+1)..-1],
+       consonants, i + 1]
+    else
+      [word.gsub(consonants[i], CONSONANTS[consonants[i]][1]), consonants, i + 1]
+    end
+  end
   
   def self.replace_consonants(word, consonants)
     return word unless consonants
     return word.gsub(consonants[0], CONSONANTS[consonants[0]][0]) if consonants.length == 1
     i = 0
-    len_cons = consonants.length 
-    while i < len_cons
-      if i == 0
-        if consonants[0] == "ห"
-          word.gsub!(consonants[0], "")
-          consonants.delete_at(0)
-          len_cons -= 1
-        else
-          word.gsub!(consonants[0], CONSONANTS[consonants[0]][0])
-          i += 1
-        end
-      elsif consonants[i] == "ร" and i == word.length and word[i - 1] == "ร"
-        word.gsub!(consonants[i], CONSONANTS[consonants[i]][1])
-      elsif consonants[i] == "ร" and i < word.length
-        if i + 1 == word.length and word[i] == "ร"
-          word.gsub!(consonants[i], CONSONANTS[consonants[i]][1])
-        elsif word[i] == "ร" and i + 1 < word.length
-          if word[i + 1] == "ร"
-            word = word.chars
-            word.delete_at(i + 1)
-            if i + 2 == len_cons
-              word[i] = "an"
-            else
-              word[i] = "a"
-            end
-            word = word.join("")
-            i += 1
-          elsif word[i] == "ร"
-            word.gsub!(consonants[i], CONSONANTS[consonants[i]][1])
-            i += 1
-          else
-            word.gsub!(consonants[i], CONSONANTS[consonants[i]][1])
-            i += 1
-          end
-        end
-      elsif word[i] == "ร"
-        word.gsub!(consonants[i], CONSONANTS[consonants[i]][1])
-        i += 1
-      else
-        word.gsub!(consonants[i], CONSONANTS[consonants[i]][1])
-        i += 1
-      end
+    while consonants and i < consonants.length
+      word, consonants, i = replace_consonants_i(word, consonants, i)
     end
     return word
   end
