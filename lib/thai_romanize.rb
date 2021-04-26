@@ -162,8 +162,8 @@ $ฤ,\\1ri"""
 
   WORDCUT = WordcutA::Wordcut.new(WordcutA::DEFAULT_THAI_DICT_PATH)
   
-  def self.romanize(text)
-    WORDCUT.into_strings(text).map { romanize_word _1 }.join(" ")
+  def self.romanize(text, delim = "")
+    WORDCUT.into_strings(text).map { romanize_word _1 }.join(delim)
   end
 end
 

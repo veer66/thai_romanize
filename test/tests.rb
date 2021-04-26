@@ -8,8 +8,8 @@ class RomanizeTest < Test::Unit::TestCase
     assert_equal "ka", ThaiRomanize.romanize("กา")
   end
 
-  def test_two_words
-    assert_equal "ka ka", ThaiRomanize.romanize("กากา")
+  def test_two_words_and_delim
+    assert_equal "ka ka", ThaiRomanize.romanize("กากา", delim = " ")
   end
 
   def test_kan
