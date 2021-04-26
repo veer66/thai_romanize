@@ -1,4 +1,5 @@
 # coding: utf-8
+
 require "test/unit"
 require_relative "../lib/thai_romanize"
 
@@ -21,6 +22,14 @@ class RomanizeTest < Test::Unit::TestCase
 
   def test_long
     assert ThaiRomanize.romanize("อานิสงส์ของการได้ยินได้ฟังพุทธวจนก่อนตาย เป็นอย่างไร").length > 0
+  end
+
+  def test_hum
+    assert_equal "ham", ThaiRomanize.romanize("หำ")
+  end
+
+  def test_rr_end
+    assert_equal "khan", ThaiRomanize.romanize("ขรร")
   end
 
 end

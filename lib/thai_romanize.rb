@@ -123,32 +123,29 @@ $ฤ,\\1ri"""
     return word
   end
 
-  def self.replace_consonants_i(word, consonants, i)
-    if i == 0 and consonants[0] == "ห"
-      [word.gsub(consonants[0], ""), consonants[1..-1], i]
-    elsif i > 0 and consonants[i] == "ร" and i == word.length and word[i - 1] == "ร"
-      [word.gsub(consonants[i], CONSONANTS[consonants[i]][1]), consonants, i]
-    elsif i > 0 and consonants[i] == "ร" and i < word.length and
-         i + 1 == word.length and word[i] = "ร"
-      [word.gsub(consonants[i], CONSONANTS[consonants[i]][1]), consonants, i]
-    elsif i > 0 and consonants[i] == "ร" and i < word.length and word[i] == "ร" and
-         i + 1 < word.length and
-         word[i + 1] == "ร"
-      [word[0...i] + (i + 2 == consonants.length ? "an" : "a") + word[(i+1)..-1],
-       consonants, i + 1]
-    else
-      [word.gsub(consonants[i], CONSONANTS[consonants[i]][1]), consonants, i + 1]
-    end
-  end
-  
   def self.replace_consonants(word, consonants)
     return word unless consonants
     return word.gsub(consonants[0], CONSONANTS[consonants[0]][0]) if consonants.length == 1
-    i = 0
-    while consonants and i < consonants.length
-      word, consonants, i = replace_consonants_i(word, consonants, i)
-    end
-    return word
+    consonants.reduce({rom: "", th: word}) do |w, consonant|
+      non_thai = w[:th].match(/^[^ก-์]+/)
+      if non_thai
+        w[:rom] += non_thai.to_s
+        w[:th] = w[:th][non_thai.to_s.length..-1]
+      end
+      if w[:skip]
+        {rom: w[:rom], th: w[:th]}
+      elsif w[:rom] == "" and w[:th] == "ห"
+        {rom: "", th: w[:th][1..-1]}
+      elsif w[:rom] == ""
+        {rom: CONSONANTS[consonant][0], th: w[:th][consonant.length..-1]}
+      elsif consonant == "ร" and w[:th] == "รร"
+        {rom: w[:rom] + "an", th: w[:th][2..-1], skip: true}
+      elsif consonant == "ร" and w[:th][0..1] == "รร"
+        {rom: w[:rom] + "a", th: w[:th][2..-1], skip: true}
+      else
+        {rom: w[:rom] + CONSONANTS[consonant][1], th: w[:th][consonant.length..-1]}
+      end
+    end[:rom]
   end
 
   def self.romanize_word(word)
