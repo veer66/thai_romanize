@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'thai_romanize'
-  s.version = '0.0.2'
+  s.version = '0.0.3'
   s.authors = ['Vee Satayamas']
   s.email = ['5ssgdxltv@relay.firefox.com']
   s.licenses = ['LGPL-3.0']
